@@ -1,0 +1,47 @@
+# Predict next combination (6 numbers)
+
+import random
+import pandas as pd
+
+# Read historical data from CSV file
+historical_data = pd.read_csv("/kaggle/input/historical/historical_data.csv", header=None)
+
+def predict_next_combination(historical_data):
+    threshold = 20  # Adjust the threshold as needed
+    hot_percentage = 0.5  # Adjust the hot percentage as needed
+    
+    # Calculate frequency of each number
+    number_frequency = [0] * 57
+    for draw in historical_data:
+        for num in draw[:-1]:  # Exclude the last column (additional number)
+            number_frequency[num] += 1
+    
+    # Identify hot and cold numbers
+    hot_numbers = [num for num, freq in enumerate(number_frequency) if freq > threshold]
+    cold_numbers = [num for num, freq in enumerate(number_frequency) if freq <= threshold]
+    
+    # Select numbers for the next combination
+    selected_numbers = []
+    num_hot = int(len(hot_numbers) * hot_percentage)
+    num_cold = 6 - num_hot  # Selecting 6 numbers for the main combination
+    
+    selected_numbers.extend(random.sample(hot_numbers, num_hot))
+    selected_numbers.extend(random.sample(cold_numbers, num_cold))
+    
+    # Fill in remaining slots with random numbers
+    while len(selected_numbers) < 6:
+        num = random.randint(1, 56)
+        if num not in selected_numbers:
+            selected_numbers.append(num)
+    
+    # Sort the selected numbers for the main combination
+    selected_numbers.sort()
+    
+    return selected_numbers
+
+# Load historical data from uploaded dataset
+historical_data_path = "/kaggle/input/historical/historical_data.csv"
+historical_data = pd.read_csv(historical_data_path, delimiter='\t', skiprows=1, header=None)
+
+next_combination = predict_next_combination(historical_data.values.tolist())
+print("Predicted next combination:", next_combination)
