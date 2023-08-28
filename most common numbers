@@ -1,0 +1,26 @@
+from collections import Counter
+
+# Load the generated combinations from the CSV file
+generated_combinations = []
+with open("combinations.csv", "r") as csvfile:
+    csv_reader = csv.reader(csvfile)
+    next(csv_reader)  # Skip the header row
+    for row in csv_reader:
+        generated_combinations.append([int(num) for num in row])
+
+# Count the frequency of each number appearing in the generated combinations
+number_frequency = Counter()
+for combination in generated_combinations:
+    number_frequency.update(combination)
+
+# Find the most common numbers and sort them by frequency
+most_common_numbers = number_frequency.most_common()
+most_common_numbers.sort(key=lambda x: x[1], reverse=True)
+
+# Print the most common numbers along with their frequencies
+for num, freq in most_common_numbers:
+    print(f"Number: {num}, Frequency: {freq}")
+
+# Extract the most common combination (list of numbers)
+most_common_combination = most_common_numbers[0][0]
+print("Most common combination:", most_common_combination)
